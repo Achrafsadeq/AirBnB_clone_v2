@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """Command interpreter for Holberton AirBnB project"""
+
 import cmd
 import shlex
 from models import storage
@@ -55,36 +56,29 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
 
-        # Create instance of the specified class
         new_instance = self.classes[class_name]()
 
-        # Process parameters if any exist
         for param in args[1:]:
             if '=' not in param:
                 continue
 
             key, value = param.split('=', 1)
 
-            # Strip quotes from the value
             if value.startswith('"') and value.endswith('"'):
-                # Handle string value
                 value = value[1:-1]  # Remove surrounding quotes
-                value = value.replace('_', ' ')  # Replace _ with space
-                value = value.replace('"', '\\"')  # Handle escaped quotes
+                value = value.replace('_', ' ') \
+                             .replace('"', '\\"')  # Handle escaped quotes
             elif '.' in value:
-                # Handle float value
                 try:
                     value = float(value)
                 except ValueError:
                     continue
             else:
-                # Handle integer value
                 try:
                     value = int(value)
                 except ValueError:
                     continue
 
-            # Set attribute if it's valid
             if hasattr(new_instance, key):
                 setattr(new_instance, key, value)
 
@@ -167,12 +161,10 @@ class HBNBCommand(cmd.Cmd):
             print("** value missing **")
             return
 
-        # Get instance and update attribute
         instance = storage.all()[key]
         attr_name = args[2]
         attr_value = args[3]
 
-        # Try to convert value to appropriate type
         try:
             attr_value = eval(attr_value)
         except (NameError, SyntaxError):
@@ -196,11 +188,12 @@ class HBNBCommand(cmd.Cmd):
         if not hasattr(self, method_name):
             return cmd.Cmd.default(self, arg)
 
-        # Handle different command patterns
         if command == 'all':
             return self.do_all(class_name)
         elif command == 'count':
-            count = sum(1 for key in storage.all() if key.startswith(class_name + '.'))
+            count = sum(
+                1 for key in storage.all() if key.startswith(class_name + '.')
+            )
             print(count)
             return
         elif command == 'show':
@@ -220,7 +213,9 @@ class HBNBCommand(cmd.Cmd):
             if len(args) < 3:
                 return self.do_update(f"{class_name} {id_arg} {attr_name}")
             attr_value = args[2].strip('" ')
-            return self.do_update(f"{class_name} {id_arg} {attr_name} {attr_value}")
+            return self.do_update(
+                f"{class_name} {id_arg} {attr_name} {attr_value}"
+            )
 
 
 if __name__ == '__main__':
