@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 """Command interpreter for Holberton AirBnB project"""
 
 import cmd
