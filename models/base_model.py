@@ -4,11 +4,12 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 import uuid
 from datetime import datetime
+import models
 
 Base = declarative_base()
 
 class BaseModel:
-    """BaseModel class"""
+    """BaseModel class for all models"""
     id = Column(String(60), primary_key=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
@@ -31,14 +32,13 @@ class BaseModel:
 
     def save(self):
         """Save instance to storage"""
-        from models import storage
-        storage.new(self)
-        storage.save()
+        self.updated_at = datetime.now()
+        models.storage.new(self)
+        models.storage.save()
 
     def delete(self):
         """Delete instance from storage"""
-        from models import storage
-        storage.delete(self)
+        models.storage.delete(self)
 
     def to_dict(self):
         """Convert instance to dictionary"""
