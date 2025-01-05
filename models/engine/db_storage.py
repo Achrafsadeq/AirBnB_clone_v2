@@ -4,6 +4,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from os import getenv
 from models.base_model import Base
+from models.state import State
+from models.city import City
 
 class DBStorage:
     """DBStorage class"""
@@ -18,21 +20,22 @@ class DBStorage:
         db = getenv('HBNB_MYSQL_DB')
         env = getenv('HBNB_ENV')
 
-        self.__engine = create_engine(f'mysql+mysqldb://{user}:{pwd}@{host}/{db}',
-                                      pool_pre_ping=True)
+        self.__engine = create_engine(
+            f'mysql+mysqldb://{user}:{pwd}@{host}/{db}',
+            pool_pre_ping=True
+        )
         if env == 'test':
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """Query all objects"""
-        from models import classes
         obj_dict = {}
         if cls:
             for obj in self.__session.query(cls).all():
                 key = f"{obj.__class__.__name__}.{obj.id}"
                 obj_dict[key] = obj
         else:
-            for cls in classes.values():
+            for cls in [State, City]:  # Add other classes as needed
                 for obj in self.__session.query(cls).all():
                     key = f"{obj.__class__.__name__}.{obj.id}"
                     obj_dict[key] = obj
