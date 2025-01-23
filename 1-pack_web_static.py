@@ -7,6 +7,7 @@ saving it in a 'versions' directory with a timestamped filename.
 from fabric.api import *
 from datetime import datetime
 
+
 def do_pack():
     """
     Creates a .tgz archive of web_static in 'versions' directory.
