@@ -10,12 +10,13 @@ import os
 
 env.hosts = ['54.158.183.40', '35.174.205.229']
 
+
 def do_clean(number=0):
     """
     Delete out-of-date archives in local and remote servers.
-    
+
     Args:
-        number (int): Number of recent archives to keep. 
+        number (int): Number of recent archives to keep.
                       Default is 0 (keep only most recent).
     """
     # Ensure number is at least 1
@@ -34,4 +35,3 @@ def do_clean(number=0):
     for archive in to_delete_remote:
         if archive.startswith('web_static_'):
             run(f'rm -rf /data/web_static/releases/{archive}')
-
