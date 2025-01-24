@@ -22,37 +22,39 @@ from os.path import exists, isdir
 
 env.hosts = ['54.158.183.40', '35.174.205.229']
 
+
 def do_pack():
     """
     Generates a compressed archive from the web_static folder.
-    
+
     Creates a timestamped .tgz archive in the 'versions' directory.
-    
+
     Returns:
         str: Path to the created archive, or None if creation fails
     """
     try:
         date = datetime.now().strftime("%Y%m%d%H%M%S")
-        
+
         if not isdir("versions"):
             local("mkdir versions")
-        
+
         file_name = f"versions/web_static_{date}.tgz"
-        
+
         local(f"tar -cvzf {file_name} web_static")
-        
+
         return file_name
     except Exception as e:
         print(f"Error creating archive: {e}")
         return None
 
+
 def do_deploy(archive_path):
     """
     Distributes and deploys an archive to web servers.
-    
+
     Args:
         archive_path (str): Path to the archive to be deployed
-    
+
     Returns:
         bool: True if deployment succeeds, False otherwise
     """
@@ -66,37 +68,38 @@ def do_deploy(archive_path):
         release_path = "/data/web_static/releases/"
 
         put(archive_path, '/tmp/')
-        
+
         run(f'mkdir -p {release_path}{no_ext}/')
-        
+
         run(f'tar -xzf /tmp/{file_n} -C {release_path}{no_ext}/')
-        
+
         run(f'rm /tmp/{file_n}')
-        
+
         run(f'mv {release_path}{no_ext}/web_static/* {release_path}{no_ext}/')
-        
+
         run(f'rm -rf {release_path}{no_ext}/web_static')
-        
+
         run('rm -rf /data/web_static/current')
         run(f'ln -s {release_path}{no_ext}/ /data/web_static/current')
-        
+
         return True
     except Exception as e:
         print(f"Error during deployment: {e}")
         return False
 
+
 def deploy():
     """
     Orchestrates the entire deployment process.
-    
+
     Creates an archive and deploys it to web servers.
-    
+
     Returns:
         bool: True if full deployment succeeds, False otherwise
     """
     archive_path = do_pack()
-    
+
     if archive_path is None:
         return False
-    
+
     return do_deploy(archive_path)
