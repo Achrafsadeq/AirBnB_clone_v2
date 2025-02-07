@@ -7,6 +7,7 @@ from models.base_model import Base
 from models.state import State
 from models.city import City
 
+
 class DBStorage:
     """DBStorage class"""
     __engine = None
@@ -32,13 +33,11 @@ class DBStorage:
         obj_dict = {}
         if cls:
             for obj in self.__session.query(cls).all():
-                key = f"{obj.__class__.__name__}.{obj.id}"
-                obj_dict[key] = obj
+                obj_dict[f"{obj.__class__.__name__}.{obj.id}"] = obj
         else:
-            for cls in [State, City]:  # Add other classes as needed
+            for cls in [State, City]:
                 for obj in self.__session.query(cls).all():
-                    key = f"{obj.__class__.__name__}.{obj.id}"
-                    obj_dict[key] = obj
+                    obj_dict[f"{obj.__class__.__name__}.{obj.id}"] = obj
         return obj_dict
 
     def new(self, obj):
@@ -57,6 +56,13 @@ class DBStorage:
     def reload(self):
         """Create all tables and session"""
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        session_factory = sessionmaker(
+            bind=self.__engine,
+            expire_on_commit=False
+        )
         Session = scoped_session(session_factory)
         self.__session = Session()
+
+    def close(self):
+        """Call remove() method on the private session attribute"""
+        self.__session.close()
